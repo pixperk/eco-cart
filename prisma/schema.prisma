@@ -1,0 +1,53 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  MAIN
+  CONTRIBUTOR
+}
+
+model User {
+  id            String     @id @default(uuid()) // UUID as a unique identifier for each user
+  kindeId       String     @unique
+  email         String     @unique
+  firstName     String
+  lastName      String
+  carts         Cart[]     @relation("UserCarts") // Carts where this user is the main user
+  contributions CartUser[] // Carts where this user is a contributor
+  createdAt     DateTime   @default(now()) // Timestamp for when the user was created
+  updatedAt     DateTime   @updatedAt // Automatically updated timestamp for when the user was last modified
+}
+
+model Cart {
+  id           String     @id @default(uuid()) // UUID as a unique identifier for each cart
+  name         String // Name of the cart (e.g., "Weekly Groceries")
+  mainUserId   String // Foreign key to identify the main user of the cart
+  mainUser     User       @relation("UserCarts", fields: [mainUserId], references: [id]) // Relation to the main user
+  contributors CartUser[] // Users who contribute to this cart
+  createdAt    DateTime   @default(now()) // Timestamp for when the cart was created
+  updatedAt    DateTime   @updatedAt // Automatically updated timestamp for when the cart was last modified
+}
+
+model CartUser {
+  id     String   @id @default(uuid()) // UUID as a unique identifier for each CartUser relationship
+  userId String // Foreign key pointing to the User involved in this cart
+  cartId String // Foreign key pointing to the Cart being contributed to
+  role   UserRole // Enum field defining the role of the user in the cart (either MAIN or CONTRIBUTOR)
+
+  user User @relation(fields: [userId], references: [id]) // Relation to the User model based on userId
+  cart Cart @relation(fields: [cartId], references: [id]) // Relation to the Cart model based on cartId
+
+  @@unique([userId, cartId]) // Ensures each user can only have one unique role per cart
+}
