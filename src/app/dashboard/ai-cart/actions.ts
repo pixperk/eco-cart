@@ -1,13 +1,9 @@
 "use server"
 import prisma from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/server_utils";
+import { ItemToBeAdded } from "@/types";
 import { GoogleGenerativeAI, SchemaType } from "@google/generative-ai";
 
-interface ItemToBeAdded{
-    itemName : string
-    qty : number,
-    unit : string
-}
 
 export async function generateAICart(desc : string) {
  
@@ -35,7 +31,7 @@ export async function generateAICart(desc : string) {
           nullable : false
         }
       },
-      required: ["itemName"],
+      required: ["itemName","qty", "unit"],
     },
   };
 

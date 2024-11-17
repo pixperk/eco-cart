@@ -1,7 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Cart, User } from '@prisma/client'
@@ -37,65 +36,68 @@ export default function Invites({ invites, handleAccept, handleReject }: Invites
   }
 
   return (
-    <div className="min-h-screen">
-      <div className="container mx-auto p-4">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-green-800 dark:text-green-200">EcoCart Invites</h1>
-        </div>
-        {pendingInvites.length === 0 ? (
-          <div className="text-center py-12">
-            <UserPlus className="mx-auto h-12 w-12 text-green-500 mb-4" />
-            <p className="text-xl text-green-800 dark:text-green-200">No pending invites. You're all caught up!</p>
-          </div>
-        ) : (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {pendingInvites.map((invite) => (
-              <Card key={invite.id} className="flex flex-col border-green-200 dark:border-green-800 overflow-hidden">
-                <CardHeader>
-                  <CardTitle className="flex items-center text-green-800 dark:text-green-200">
-                    <ShoppingCart className="mr-2 h-5 w-5" />
-                    {invite.cartUser.cart.name}
-                  </CardTitle>
-                  <CardDescription className="text-green-600 dark:text-green-300">
-                    You've been invited to join this cart
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="pt-4">
-                  <div className="flex items-center space-x-4">
-                    <Avatar className="h-12 w-12 border-2 border-green-500">
-                      <AvatarImage src={invite.cartUser.user.picture} alt={invite.cartUser.user.firstName} />
-                      <AvatarFallback className="text-green-800 bg-green-100">
-                        {invite.cartUser.user.firstName.charAt(0)}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <p className="text-sm font-medium text-green-800 dark:text-green-200">
-                        {invite.cartUser.user.firstName} {invite.cartUser.user.lastName}
-                      </p>
-                      <p className="text-sm text-green-600 dark:text-green-400">Invited you</p>
-                    </div>
-                  </div>
-                </CardContent>
-                <CardFooter className="flex justify-between mt-auto pt-4 border-t border-green-200 dark:border-green-700">
-                  <Button 
-                    variant="outline" 
-                    onClick={() => handleRejectClick(invite.id)}
-                    className="border-red-500 text-red-500 hover:bg-red-50 dark:hover:bg-red-950"
-                  >
-                    <X className="mr-2 h-4 w-4" /> Reject
-                  </Button>
-                  <Button 
-                    onClick={() => handleAcceptClick(invite.id)}
-                    className="bg-green-600 hover:bg-green-700 text-white"
-                  >
-                    <Check className="mr-2 h-4 w-4" /> Accept
-                  </Button>
-                </CardFooter>
-              </Card>
-            ))}
-          </div>
-        )}
+    <div className="container mx-auto p-4 space-y-6">
+      <div className="text-center">
+        <h1 className="text-3xl font-bold text-green-800 dark:text-green-200 flex items-center justify-center">
+          <UserPlus className="mr-2" />
+          EcoCart Invites
+        </h1>
+        <p className="text-green-600 dark:text-green-400 mt-2">
+          Manage your pending cart invitations
+        </p>
       </div>
+
+      {pendingInvites.length === 0 ? (
+        <div className="text-center py-12">
+          <ShoppingCart className="mx-auto h-12 w-12 text-green-500 mb-4" />
+          <p className="text-xl text-green-800 dark:text-green-200">No pending invites. You're all caught up!</p>
+        </div>
+      ) : (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {pendingInvites.map((invite) => (
+            <div key={invite.id} className="border border-green-200 dark:border-green-800 rounded-lg p-4 bg-white dark:bg-gray-800 flex flex-col">
+              <div className="mb-4">
+                <h2 className="text-lg font-semibold text-green-800 dark:text-green-200 flex items-center">
+                  <ShoppingCart className="mr-2 h-5 w-5" />
+                  {invite.cartUser.cart.name}
+                </h2>
+                <p className="text-sm text-green-600 dark:text-green-300">
+                  You've been invited to join this cart
+                </p>
+              </div>
+              <div className="flex items-center space-x-4 mb-4">
+                <Avatar className="h-12 w-12 border-2 border-green-500">
+                  <AvatarImage src={invite.cartUser.user.picture} alt={invite.cartUser.user.firstName} />
+                  <AvatarFallback className="text-green-800 bg-green-100">
+                    {invite.cartUser.user.firstName.charAt(0)}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="text-sm font-medium text-green-800 dark:text-green-200">
+                    {invite.cartUser.user.firstName} {invite.cartUser.user.lastName}
+                  </p>
+                  <p className="text-sm text-green-600 dark:text-green-400">Invited you</p>
+                </div>
+              </div>
+              <div className="flex justify-between mt-auto pt-4 border-t border-green-200 dark:border-green-700">
+                <Button 
+                  variant="outline" 
+                  onClick={() => handleRejectClick(invite.id)}
+                  className="border-red-500 text-red-500 hover:bg-red-50 dark:hover:bg-red-950"
+                >
+                  <X className="mr-2 h-4 w-4" /> Reject
+                </Button>
+                <Button 
+                  onClick={() => handleAcceptClick(invite.id)}
+                  className="bg-green-600 hover:bg-green-700 text-white dark:bg-green-700 dark:hover:bg-green-800"
+                >
+                  <Check className="mr-2 h-4 w-4" /> Accept
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

@@ -1,7 +1,6 @@
 import prisma from "@/lib/prisma";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { GoogleGenerativeAI } from "@google/generative-ai"
 import { getCurrentUser } from "@/lib/server_utils";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 import { revalidatePath } from "next/cache";
 
 

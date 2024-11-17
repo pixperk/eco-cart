@@ -51,6 +51,9 @@ export default async function DashboardPage({
     where: {
       cartId: params.cartId,
     },
+    orderBy : {
+      createdAt : "desc"
+    }
   });
 
   if (!cart) {

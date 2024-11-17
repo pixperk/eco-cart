@@ -14,7 +14,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { Cart, Invite, User } from '@prisma/client'
-import { HelpCircle, Leaf, List, LogOut, Mail, Moon, Settings, ShoppingCart, Sparkles, Sun } from 'lucide-react'
+import { HelpCircle, Leaf, List, LogOut, Mail, Moon, Settings, ShoppingCart, Sparkles, Sun, UserPlus } from 'lucide-react'
 import { useTheme } from "next-themes"
 import Link from 'next/link'
 
@@ -62,7 +62,7 @@ const SidebarContent = ({user, invites}:{user:User, invites:Invite[]}) => {
             </Link>
           </li>
           <li>
-            <Link href="/eco-products" className="flex items-center p-3 rounded-lg hover:bg-green-600 dark:hover:bg-gray-800 transition-colors">
+            <Link href="/dashboard/eco-products" className="flex items-center p-3 rounded-lg hover:bg-green-600 dark:hover:bg-gray-800 transition-colors">
               <Leaf className="h-5 w-5 mr-3 text-green-100" />
               Eco Products
             </Link>
@@ -76,7 +76,7 @@ const SidebarContent = ({user, invites}:{user:User, invites:Invite[]}) => {
           <li>
             <Link href="/dashboard/invites" className="flex items-center justify-between p-3 rounded-lg hover:bg-green-600 dark:hover:bg-gray-800 transition-colors">
               <div className="flex items-center">
-                <Mail className="h-5 w-5 mr-3 text-green-100" />
+                <UserPlus className="h-5 w-5 mr-3 text-green-100" />
                 Invites
               </div>
               {invites.length > 0 && (
