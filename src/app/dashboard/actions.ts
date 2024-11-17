@@ -2,6 +2,7 @@ import prisma from "@/lib/prisma";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { GoogleGenerativeAI } from "@google/generative-ai"
 import { getCurrentUser } from "@/lib/server_utils";
+import { revalidatePath } from "next/cache";
 
 
 
@@ -13,8 +14,6 @@ async function getCart(cartId: string, userId: string) {
       contributors : true
     }
   });
-
-  
 
   if (!cart) {
     throw new Error("Unauthorized action");
@@ -47,12 +46,34 @@ await prisma.cartUser.create({
 
 export async function deleteCart(cartId: string) {
   const user = await getCurrentUser();
-  await getCart(cartId, user.id);
+
+  const cart = await prisma.cart.findFirst({
+    where: {
+      id: cartId,
+      mainUserId: user.id, 
+    },
+  });
+
+  if (!cart) {
+    throw new Error("Cart not found or you do not have permission to delete it.");
+  }
+
+ 
+  await prisma.cartUser.deleteMany({
+    where: { cartId },
+  });
+
+  await prisma.cartItem.deleteMany({
+    where: { cartId },
+  });
 
   await prisma.cart.delete({
     where: { id: cartId },
   });
+
+  revalidatePath('/dashboard');
 }
+
 
 export async function addItem(
   name: string,

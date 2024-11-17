@@ -1,8 +1,8 @@
 import prisma from '@/lib/prisma'
+import { getCurrentUser } from '@/lib/server_utils'
 import { FC } from 'react'
 import MyCarts from './MyCarts'
-import { addCart,  } from './actions'
-import { getCurrentUser } from '@/lib/server_utils'
+import { addCart, deleteCart, } from './actions'
 
 interface pageProps {
   
@@ -12,6 +12,11 @@ const page: FC<pageProps> = async({}) => {
   const handleAddCart = async(cartName:string)=>{
     "use server"
     await addCart(cartName)
+  }
+
+  const handleDeleteCart = async(cartId : string)=>{
+    "use server"
+    await deleteCart(cartId)
   }
 
   const user = await getCurrentUser()
@@ -36,7 +41,7 @@ const page: FC<pageProps> = async({}) => {
       }
     }
   })
-  return <MyCarts  carts = {carts} addCart={handleAddCart} contributions = {contributions}/>
+  return <MyCarts  carts = {carts} addCart={handleAddCart} deleteCart = {handleDeleteCart} contributions = {contributions}/>
 }
 
 export default page
