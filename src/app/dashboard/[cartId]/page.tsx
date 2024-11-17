@@ -1,52 +1,103 @@
-import { Suspense } from 'react'
-import { Skeleton } from "@/components/ui/skeleton"
-import ShoppingListClient from '@/components/DashboardClient'
+import { Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+import prisma from "@/lib/prisma";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import CartPage from "./cart_and_items";
+import { notFound } from "next/navigation";
+import { addContributor, addItem, deleteItem, generateAIRecommendation } from "../actions";
+import { revalidatePath } from "next/cache";
 
-async function getData() {
-  // In a real app, this would fetch from your database
-  return {
-    lists: [
-      { id: 1, name: "Weekly Groceries" },
-      { id: 2, name: "Household Essentials" },
-      { id: 3, name: "Zero Waste Products" },
-    ],
-    items: [
-      { 
-        id: 1, 
-        name: "Organic Apples", 
-        quantity: 5, 
-        unit: "pcs", 
-        ecoScore: 9,
-        tags: ["organic", "local"]
-      },
-      { 
-        id: 2, 
-        name: "Reusable Bags", 
-        quantity: 3, 
-        unit: "pcs",
-        ecoScore: 10,
-        tags: ["zero-waste"]
-      },
-      { 
-        id: 3, 
-        name: "Bamboo Toothbrush", 
-        quantity: 2, 
-        unit: "pcs",
-        ecoScore: 8,
-        tags: ["sustainable", "plastic-free"]
-      },
-    ]
+export default async function DashboardPage({
+  params,
+}: {
+  params: { cartId: string };
+}) {
+  const { getUser } = getKindeServerSession();
+  const kindeUser = await getUser();
+
+  if (!kindeUser) {
+    throw new Error("Unauthorized");
   }
-}
 
-export default async function DashboardPage() {
-  const initialData = await getData()
-  
+  const user = await prisma.user.findFirst({
+    where: {
+      kindeId: kindeUser.id,
+    },
+  });
+
+  if (!user) {
+    throw new Error("Unauthorized");
+  }
+
+  const cart = await prisma.cartUser.findFirst({
+    where: {
+      userId: user.id,
+      cartId: params.cartId,
+    },
+    include: {
+      cart: {
+        include: {
+          contributors: {
+            include: {
+              user: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  const items = await prisma.cartItem.findMany({
+    where: {
+      cartId: params.cartId,
+    },
+  });
+
+  if (!cart) {
+    return notFound();
+  }
+
+  async function handleAddItem(
+    name: string,
+    qty: number,
+    unit: string,
+    cartId: string
+  ) {
+    "use server";
+    await addItem(name, qty, unit, cartId);
+    revalidatePath(`dashboard/${params.cartId}`);
+  }
+
+  async function handleDeleteItem(itemId: string) {
+    "use server";
+    await deleteItem(itemId);
+    revalidatePath(`dashboard/${params.cartId}`);
+  }
+  async function handleInvite(email: string, cartId: string) {
+    "use server";
+    await addContributor(email, cartId);
+    revalidatePath(`dashboard/${params.cartId}`);
+  }
+
+  async function AIRecommendation(itemId : string) : Promise<string> {
+    "use server"
+    const result : string = await generateAIRecommendation(itemId)
+    return result;
+  }
+
   return (
     <Suspense fallback={<DashboardSkeleton />}>
-      <ShoppingListClient initialData={initialData} />
+      <CartPage
+        cart={cart.cart}
+        items={items}
+        addItem={handleAddItem}
+        deleteItem={handleDeleteItem}
+        addContributor={handleInvite}
+        contributors={cart.cart.contributors}
+        getAIRecommendation={AIRecommendation}
+      />
     </Suspense>
-  )
+  );
 }
 
 function DashboardSkeleton() {
@@ -68,5 +119,5 @@ function DashboardSkeleton() {
         </div>
       </main>
     </div>
-  )
+  );
 }

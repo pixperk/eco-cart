@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { Navbar } from "@/components/Navbar";
-import { Footer } from "@/components/Footer";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryProvider } from "@/components/QueryProvider";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -23,6 +23,9 @@ export const metadata: Metadata = {
   viewport: "width=device-width, initial-scale=1",
 };
 
+
+
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -30,7 +33,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <body className="antialiased min-h-screen flex flex-col" suppressHydrationWarning>
+      <body className="antialiased min-h-screen flex flex-col dark:bg-gray-800" suppressHydrationWarning>
+   <QueryProvider>
       <ThemeProvider
             attribute="class"
             defaultTheme="system"
@@ -38,8 +42,14 @@ export default function RootLayout({
             disableTransitionOnChange
           >
         <main className="flex-grow">
-          {children}</main>
+        
+          {children}
+         
+          </main>
+
         </ThemeProvider>
+        </QueryProvider>
+        
       </body>
     </html>
   );

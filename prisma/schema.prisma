@@ -24,10 +24,12 @@ model User {
   email         String     @unique
   firstName     String
   lastName      String
+  picture       String     @default("")
   carts         Cart[]     @relation("UserCarts") // Carts where this user is the main user
   contributions CartUser[] // Carts where this user is a contributor
   createdAt     DateTime   @default(now()) // Timestamp for when the user was created
   updatedAt     DateTime   @updatedAt // Automatically updated timestamp for when the user was last modified
+  Invite        Invite[]
 }
 
 model Cart {
@@ -36,8 +38,18 @@ model Cart {
   mainUserId   String // Foreign key to identify the main user of the cart
   mainUser     User       @relation("UserCarts", fields: [mainUserId], references: [id]) // Relation to the main user
   contributors CartUser[] // Users who contribute to this cart
+  items        CartItem[]
   createdAt    DateTime   @default(now()) // Timestamp for when the cart was created
   updatedAt    DateTime   @updatedAt // Automatically updated timestamp for when the cart was last modified
+}
+
+model CartItem {
+  id     String @id @default(uuid())
+  name   String
+  qty    Int
+  unit   String
+  cart   Cart   @relation(fields: [cartId], references: [id])
+  cartId String
 }
 
 model CartUser {
@@ -46,8 +58,18 @@ model CartUser {
   cartId String // Foreign key pointing to the Cart being contributed to
   role   UserRole // Enum field defining the role of the user in the cart (either MAIN or CONTRIBUTOR)
 
-  user User @relation(fields: [userId], references: [id]) // Relation to the User model based on userId
-  cart Cart @relation(fields: [cartId], references: [id]) // Relation to the Cart model based on cartId
+  user   User     @relation(fields: [userId], references: [id]) // Relation to the User model based on userId
+  cart   Cart     @relation(fields: [cartId], references: [id]) // Relation to the Cart model based on cartId
+  Invite Invite[]
 
   @@unique([userId, cartId]) // Ensures each user can only have one unique role per cart
+}
+
+model Invite {
+  id            String @id @default(uuid())
+  invitedById   String
+  invitedUserId String
+
+  cartUser CartUser @relation(fields: [invitedById], references: [id])
+  user     User     @relation(fields: [invitedUserId], references: [id])
 }

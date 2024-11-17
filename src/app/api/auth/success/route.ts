@@ -1,8 +1,9 @@
-import { PrismaClient } from "@prisma/client";
+
+import prisma from "@/lib/prisma";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { NextResponse } from "next/server";
 
-const prisma = new PrismaClient();
+
 
 export async function GET() {
     try {
@@ -25,6 +26,8 @@ export async function GET() {
                     firstName: user.given_name || "FirstName",
                     lastName: user.family_name || "LastName",
                     email: user.email || "noemail@domain.com",
+                    picture : user.picture || ""
+
                 }
             });
         }

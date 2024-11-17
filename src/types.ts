@@ -1,18 +1,13 @@
-export interface ShoppingList {
-    id: number;
+export interface Cart {
+    id: string;
     name: string;
   }
   
-  export interface ShoppingItem {
-    id: number;
-    name: string;
-    quantity: number;
-    unit: string;
-    ecoScore?: number; // New: Add eco-friendliness score
-    tags?: string[]; // New: Add categories/tags
+  export interface Item {
+    id: string; name: string; qty: number; unit: string
   }
   
   export interface AiRecommendation {
-    item: ShoppingItem;
+    item: Item;
     recommendation: string;
   }
