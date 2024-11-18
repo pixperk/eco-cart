@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Sparkles, Loader2 } from 'lucide-react'
+import { toast } from 'sonner'
 
 interface GenerateAICartProps {
   genCart: (desc: string) => Promise<void>
@@ -23,9 +24,9 @@ export default function GenerateAICart({ genCart }: GenerateAICartProps) {
       await genCart(description)
       setDescription('')
       router.push('/dashboard')
+      toast.success('New cart generated successfully')
     } catch (error) {
-      console.error('Failed to generate cart:', error)
-      // Here you might want to show an error message to the user
+      toast.error('Failed to generate the cart. Try again later')
     } finally {
       setIsGenerating(false)
     }

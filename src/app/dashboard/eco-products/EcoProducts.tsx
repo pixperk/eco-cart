@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Loader2, ShoppingCart, Leaf } from 'lucide-react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { ItemToBeAdded } from '@/types'
+import { toast } from 'sonner'
 
 interface CartType { 
   cart: {
@@ -44,16 +45,16 @@ export default function EcoProducts({ generateItems, carts, addToCart }: EcoProd
 
   const handleAddToCart = async (item: ItemToBeAdded) => {
     if (!selectedCart) {
-      alert('Please select a cart first')
+      toast.info('Please select a cart first')
       return
     }
     setIsAddingToCart(item.itemName)
     try {
       await addToCart(item.itemName, item.qty, item.unit, selectedCart)
-      alert('Product added to cart successfully')
+      toast.success(`${item.itemName} added to cart successfully`)
     } catch (error) {
       console.error('Error adding product to cart:', error)
-      alert('Failed to add product to cart')
+      toast.error('Failed to add product to cart')
     }
     setIsAddingToCart(null)
   }

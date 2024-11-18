@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { pusherServer } from "@/lib/pusher";
 import { getCurrentUser } from "@/lib/server_utils";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { revalidatePath } from "next/cache";
@@ -83,6 +84,14 @@ export async function addItem(
   const user = await getCurrentUser();
   await getCart(cartId, user.id);
 
+  
+  pusherServer.trigger(`cart_${cartId}_items`, `items`,
+    {
+      senderName : `${user.firstName} ${user.lastName}`,
+    }
+  )
+
+
   await prisma.cartItem.create({
     data: {
       name,
@@ -91,6 +100,8 @@ export async function addItem(
       cartId,
     },
   });
+
+  
 }
 
 export async function deleteItem(itemId: string) {
@@ -105,6 +116,14 @@ export async function deleteItem(itemId: string) {
   }
 
   await getCart(cartItem.cartId, user.id);
+
+  
+  pusherServer.trigger(`cart_${cartItem.cartId}_items`, `items`,
+    {
+      senderName : `${user.firstName} ${user.lastName}`,
+    }
+  )
+
 
   await prisma.cartItem.delete({
     where: { id: itemId },
@@ -151,12 +170,26 @@ export async function addContributor(userEmail: string, cartId: string) {
   if (invite) throw new Error("Already Invited");
   if (inCart) throw new Error("User already a contributor");
 
-  await prisma.invite.create({
+  pusherServer.trigger(`user_${contributor.id}_invites`, `invites`,
+    {
+      senderId : user.id,
+      senderName : `${user.firstName} ${user.lastName}`,
+    }
+  )
+  
+  const newInvite = await prisma.invite.create({
     data: {
       invitedById: cartuser.id,
       invitedUserId: contributor.id,
     },
   });
+
+  pusherServer.trigger(`user_${contributor.id}_invites`, `invites`,
+    {
+      inviteId : newInvite.id,
+      senderName : user.firstName,
+    }
+  )
 }
 
 

@@ -34,7 +34,7 @@ const page: FC<pageProps> = async({}) => {
     "use server"
     await rejectInvite(inviteId)
   }
-  return <Invites invites={myInvites} handleAccept={handleAccept} handleReject={handleReject}/>
+  return <Invites userId = {user.id} invites={myInvites} handleAccept={handleAccept} handleReject={handleReject}/>
 }
 
 export default page

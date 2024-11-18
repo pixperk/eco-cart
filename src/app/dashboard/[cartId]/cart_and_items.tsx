@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -8,11 +8,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Cart, CartItem, User } from '@prisma/client'
-import { Apple, Carrot, Egg, Fish, Leaf, PlusCircle, ShoppingCart, Trash2, UserPlus, Users, Wheat, Sparkles, X } from 'lucide-react'
+import { Leaf, PlusCircle, ShoppingCart, Trash2, UserPlus, Users, Sparkles, X, Loader2 } from 'lucide-react'
+import { pusherClient } from '@/lib/pusher'
+import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 
 type Contributor = {
   id: string;
@@ -26,58 +28,82 @@ interface CartPageProps {
   cart: Cart
   items: CartItem[]
   contributors: Contributor[]
-  addItem: (name: string, qty: number, unit: string, cartId: string) => void
+  addItem: (name: string, qty: number, unit: string, cartId: string) => Promise<void>
   deleteItem: (itemId: string) => Promise<void>
-  addContributor: (email: string, cartId: string) => void
+  addContributor: (email: string, cartId: string) => Promise<void>
   getAIRecommendation: (itemId: string) => Promise<string>
-}
-
-const predefinedUnits = ['kg', 'g', 'l', 'ml', 'pcs', 'box']
-
-const itemIcons: { [key: string]: React.ReactNode } = {
-  Apple: <Apple className="h-5 w-5" />,
-  Carrot: <Carrot className="h-5 w-5" />,
-  Wheat: <Wheat className="h-5 w-5" />,
-  Fish: <Fish className="h-5 w-5" />,
-  Egg: <Egg className="h-5 w-5" />,
 }
 
 export default function CartPage({ cart, items, contributors, addItem, deleteItem, addContributor, getAIRecommendation }: CartPageProps) {
   const [newItem, setNewItem] = useState({ name: '', qty: '', unit: '' })
   const [contributorEmail, setContributorEmail] = useState('')
   const [itemToDelete, setItemToDelete] = useState<CartItem | null>(null)
-  const [customUnit, setCustomUnit] = useState('')
   const [loadingRecommendation, setLoadingRecommendation] = useState<string | null>(null)
   const [recommendation, setRecommendation] = useState<{ itemId: string, text: string } | null>(null)
   const [activeTab, setActiveTab] = useState('items')
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isAddingItem, setIsAddingItem] = useState(false)
+  const [isAddingContributor, setIsAddingContributor] = useState(false)
+  const [isContributorDialogOpen, setIsContributorDialogOpen] = useState(false)
 
-  const handleAddItem = (e: React.FormEvent) => {
+  const router = useRouter();
+
+  useEffect(() => {
+    pusherClient.subscribe(`cart_${cart.id}_items`);
+    const itemHandler = () => {
+      router.refresh()
+    };
+    pusherClient.bind(`items`, itemHandler);
+    return () => {
+      pusherClient.unsubscribe(`user_${cart.id}_invites`);
+      pusherClient.unbind(`items`, itemHandler);
+    };
+  }, [cart.id, router]);
+
+  const handleAddItem = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (newItem.name && newItem.qty && (newItem.unit || customUnit)) {
-      addItem(newItem.name, Number(newItem.qty), newItem.unit || customUnit, cart.id)
-      setNewItem({ name: '', qty: '', unit: '' })
-      setCustomUnit('')
-      setActiveTab('items')
+    if (newItem.name && newItem.qty && newItem.unit) {
+      setIsAddingItem(true)
+      try {
+        await addItem(newItem.name, Number(newItem.qty), newItem.unit, cart.id)
+        setNewItem({ name: '', qty: '', unit: '' })
+        setActiveTab('items')
+        toast.success('Item added successfully!')
+      } catch (error) {
+        console.error('Error adding item:', error)
+        toast.error('Failed to add item. Please try again.')
+      } finally {
+        setIsAddingItem(false)
+      }
     }
   }
 
-  const handleAddContributor = (e: React.FormEvent) => {
+  const handleAddContributor = async (e: React.FormEvent) => {
     e.preventDefault()
     if (contributorEmail) {
-      addContributor(contributorEmail, cart.id)
-      setContributorEmail('')
+      setIsAddingContributor(true)
+      try {
+        await addContributor(contributorEmail, cart.id)
+        setContributorEmail('')
+        setIsContributorDialogOpen(false)
+        toast.success('Contributor invited successfully!')
+      } catch (error) {
+        console.error('Error inviting contributor:', error)
+        toast.error('Failed to invite contributor. Please try again.')
+      } finally {
+        setIsAddingContributor(false)
+      }
     }
   }
 
-  const handleAIRecommendation = async (itemId: string, itemName: string) => {
+  const handleAIRecommendation = async (itemId: string) => {
     setLoadingRecommendation(itemId)
     try {
       const result = await getAIRecommendation(itemId)
       setRecommendation({ itemId, text: result })
     } catch (error) {
       console.error('Error getting AI recommendation:', error)
-      setRecommendation({ itemId, text: 'Failed to get recommendation. Please try again.' })
+      toast.error('Failed to get AI recommendation. Please try again.')
     } finally {
       setLoadingRecommendation(null)
     }
@@ -88,8 +114,10 @@ export default function CartPage({ cart, items, contributors, addItem, deleteIte
       setIsDeleting(true)
       try {
         await deleteItem(itemToDelete.id)
+        toast.success('Item deleted successfully!')
       } catch (error) {
         console.error('Error deleting item:', error)
+        toast.error('Failed to delete item. Please try again.')
       } finally {
         setIsDeleting(false)
         setItemToDelete(null)
@@ -148,7 +176,7 @@ export default function CartPage({ cart, items, contributors, addItem, deleteIte
                       <li key={item.id} className="flex items-center justify-between p-4 bg-green-50 dark:bg-green-900/50 rounded-lg shadow-sm transition-all hover:shadow-md">
                         <div className="flex items-center">
                           <div className="bg-green-200 dark:bg-green-800 p-2 rounded-full mr-4">
-                            {itemIcons[item.name] || <Leaf className="h-5 w-5 text-green-600 dark:text-green-400" />}
+                            <Leaf className="h-5 w-5 text-green-600 dark:text-green-400" />
                           </div>
                           <div>
                             <span className="font-medium text-green-800 dark:text-green-200">{item.name}</span>
@@ -165,11 +193,11 @@ export default function CartPage({ cart, items, contributors, addItem, deleteIte
                                   variant="outline"
                                   size="icon"
                                   className="text-green-600 hover:text-green-700 border-green-300 hover:border-green-400"
-                                  onClick={() => handleAIRecommendation(item.id, item.name)}
+                                  onClick={() => handleAIRecommendation(item.id)}
                                   disabled={loadingRecommendation === item.id}
                                 >
                                   {loadingRecommendation === item.id ? (
-                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-green-600" />
+                                    <Loader2 className="h-4 w-4 animate-spin" />
                                   ) : (
                                     <Sparkles className="h-4 w-4" />
                                   )}
@@ -195,7 +223,7 @@ export default function CartPage({ cart, items, contributors, addItem, deleteIte
                                 <Button variant="outline" onClick={() => setItemToDelete(null)}>Cancel</Button>
                                 <Button variant="destructive" onClick={handleDeleteItem} disabled={isDeleting}>
                                   {isDeleting ? (
-                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white" />
+                                    <Loader2 className="h-4 w-4 animate-spin" />
                                   ) : (
                                     'Delete'
                                   )}
@@ -259,45 +287,29 @@ export default function CartPage({ cart, items, contributors, addItem, deleteIte
                   </div>
                   <div className="flex-1">
                     <Label htmlFor="itemUnit">Unit</Label>
-                    <Select
-                      value={newItem.unit}
-                      onValueChange={(value) => setNewItem({ ...newItem, unit: value })}
-                    >
-                      <SelectTrigger className="border-green-300 focus:ring-green-500">
-                        <SelectValue placeholder="Select unit" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {predefinedUnits.map((unit) => (
-                          <SelectItem key={unit} value={unit}>
-                            {unit}
-                          </SelectItem>
-                        ))}
-                        <SelectItem value="custom">Custom</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                {newItem.unit === 'custom' && (
-                  <div>
-                    <Label htmlFor="customUnit">Custom Unit</Label>
                     <Input
-                      id="customUnit"
-                      value={customUnit}
-                      onChange={(e) => setCustomUnit(e.target.value)}
-                      placeholder="Enter custom unit"
+                      id="itemUnit"
+                      value={newItem.unit}
+                      onChange={(e) => setNewItem({ ...newItem, unit: e.target.value })}
+                      placeholder="Enter unit (e.g., kg, g, l)"
                       className="border-green-300 focus:ring-green-500"
                     />
                   </div>
-                )}
-                <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 text-white">
-                  <PlusCircle className="mr-2 h-4 w-4" /> Add Item
+                </div>
+                <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 text-white" disabled={isAddingItem}>
+                  {isAddingItem ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                  )}
+                  {isAddingItem ? 'Adding Item...' : 'Add Item'}
                 </Button>
               </form>
             </TabsContent>
           </Tabs>
           
           <div className="mt-6">
-            <Dialog>
+            <Dialog open={isContributorDialogOpen} onOpenChange={setIsContributorDialogOpen}>
               <DialogTrigger asChild>
                 <Button variant="outline" className="w-full border-green-500 text-green-600 hover:bg-green-50 dark:border-green-700 dark:text-green-400 dark:hover:bg-green-900/50">
                   <UserPlus className="mr-2 h-4 w-4" /> Invite Contributor
@@ -319,8 +331,14 @@ export default function CartPage({ cart, items, contributors, addItem, deleteIte
                       className="border-green-300 focus:ring-green-500"
                     />
                   </div>
-                  <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 text-white">
-                    Send Invitation
+                  <Button type="submit" className="w-full bg-green-600 hover:bg-green-700 text-white"
+                    disabled={isAddingContributor}>
+                    {isAddingContributor ? (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    ) : (
+                      <UserPlus className="mr-2 h-4 w-4" />
+                    )}
+                    {isAddingContributor ? 'Sending Invitation...' : 'Send Invitation'}
                   </Button>
                 </form>
               </DialogContent>
