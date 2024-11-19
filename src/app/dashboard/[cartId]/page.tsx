@@ -16,7 +16,7 @@ export default async function DashboardPage({
   const kindeUser = await getUser();
 
   if (!kindeUser) {
-    throw new Error("Unauthorized");
+    return notFound()
   }
 
   const user = await prisma.user.findFirst({
@@ -26,7 +26,7 @@ export default async function DashboardPage({
   });
 
   if (!user) {
-    throw new Error("Unauthorized");
+    return notFound()
   }
 
   const cart = await prisma.cartUser.findFirst({
