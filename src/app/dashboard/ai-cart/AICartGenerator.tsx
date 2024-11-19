@@ -25,8 +25,8 @@ export default function GenerateAICart({ genCart }: GenerateAICartProps) {
       setDescription('')
       router.push('/dashboard')
       toast.success('New cart generated successfully')
-    } catch (error) {
-      toast.error('Failed to generate the cart. Try again later')
+    } catch (error : unknown) {
+      toast.error(error instanceof Error ? error.message : 'Failed to generate the cart. Try again later')
     } finally {
       setIsGenerating(false)
     }

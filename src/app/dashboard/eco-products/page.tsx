@@ -5,11 +5,9 @@ import { addItem } from '../actions'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
-interface pageProps {
-  
-}
 
-const page: FC<pageProps> = async({}) => {
+
+const page: FC = async({}) => {
     
     async function handleGenerateAlternatives(itemDesc : string){
         "use server"

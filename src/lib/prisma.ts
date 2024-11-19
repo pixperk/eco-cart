@@ -1,15 +1,31 @@
 import { PrismaClient } from '@prisma/client';
 
-// Ensure the Prisma Client instance is shared across requests in development
+
 let prisma: PrismaClient;
 
+const createPrismaClient = () => {
+  return new PrismaClient({
+    log:
+      process.env.NODE_ENV === 'development'
+        ? ['query', 'error', 'warn']
+        : ['error'],
+  });
+};
+
+type PrismaClientInstance = ReturnType<typeof createPrismaClient>;
+
+
+const globalForPrisma = globalThis as unknown as {
+  prisma: PrismaClientInstance | undefined;
+};
+
 if (process.env.NODE_ENV === 'production') {
-  prisma = new PrismaClient();
+  prisma = globalForPrisma.prisma ?? createPrismaClient();
 } else {
-  if (!(global as any).prisma) {
-    (global as any).prisma = new PrismaClient();
+  if (!globalForPrisma.prisma) {
+    globalForPrisma.prisma = new PrismaClient();
   }
-  prisma = (global as any).prisma;
+  prisma = globalForPrisma.prisma;
 }
 
 export default prisma;

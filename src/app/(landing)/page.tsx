@@ -1,97 +1,55 @@
 'use client'
 
-import { ShoppingCart, Leaf, Sparkles, List, Users, UserPlus, Star, ArrowRight, PenTool, Bot, Recycle } from 'lucide-react';
-import Image from 'next/image';
+import { LoginLink } from '@kinde-oss/kinde-auth-nextjs/components';
 import { motion } from 'framer-motion';
+import { ArrowRight, Leaf, List, ShoppingCart, Sparkles, Star, Users } from 'lucide-react';
+import Image from 'next/image';
 
 export default function EnhancedLandingPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-green-50 to-white dark:from-green-950 dark:to-gray-900 text-green-900 dark:text-green-100 font-sans transition-colors duration-300">
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <section className="pt-20 pb-32 relative overflow-hidden">
-          <div className="text-center space-y-8 relative z-10">
-            <motion.h1 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-700 to-emerald-500 dark:from-green-400 dark:to-emerald-300 mb-6"
-            >
-              Smart, Sustainable Shopping with EcoCart
-            </motion.h1>
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="text-xl sm:text-2xl text-green-700 dark:text-green-300 max-w-3xl mx-auto mb-10"
-            >
-              Eco-friendly, AI-powered recommendations for conscious shopping. Make a positive impact with every purchase.
-            </motion.p>
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              className="flex flex-col sm:flex-row justify-center gap-6"
+              transition={{ duration: 0.8 }}
+              className="flex-1 space-y-8 text-center lg:text-left"
             >
-              <button className="bg-green-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-green-700 transition-colors transform hover:scale-105 shadow-lg hover:shadow-xl">
-                <List className="inline-block mr-2 h-6 w-6" />
-                Create Custom List
-              </button>
-              <button className="bg-emerald-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-emerald-700 transition-colors transform hover:scale-105 shadow-lg hover:shadow-xl">
-                <Sparkles className="inline-block mr-2 h-6 w-6" />
-                Try AI Shopping
-              </button>
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-700 to-emerald-500 dark:from-green-400 dark:to-emerald-300">
+                Smart, Sustainable Shopping with EcoCart
+              </h1>
+              <p className="text-xl sm:text-2xl text-green-700 dark:text-green-300 max-w-3xl mx-auto lg:mx-0">
+                Eco-friendly, AI-powered recommendations for conscious shopping. Make a positive impact with every purchase.
+              </p>
+              <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-6">
+                <LoginLink postLoginRedirectURL='/dashboard' className="bg-green-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-green-700 transition-colors transform hover:scale-105 shadow-lg hover:shadow-xl inline-flex items-center justify-center">
+                  <List className="mr-2 h-6 w-6" />
+                  Create Custom List
+                </LoginLink>
+                <LoginLink postLoginRedirectURL='/dashboard/ai-cart' className="bg-emerald-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-emerald-700 transition-colors transform hover:scale-105 shadow-lg hover:shadow-xl inline-flex items-center justify-center">
+                  <Sparkles className="mr-2 h-6 w-6" />
+                  Let AI Do Everything
+                </LoginLink>
+              </div>
             </motion.div>
-          </div>
-          
-          <motion.div 
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.6 }}
-            className="mt-20 relative"
-          >
-            <Image
-              src="/eco.svg"
-              alt="EcoCart Illustration"
-              width={800}
-              height={400}
-              className="mx-auto rounded-lg shadow-2xl"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-lg"></div>
-          </motion.div>
-
-          <div className="absolute top-1/2 left-0 w-64 h-64 bg-green-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
-          <div className="absolute top-1/2 right-0 w-64 h-64 bg-emerald-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
-          <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-64 h-64 bg-lime-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
-        </section>
-
-        <section id="how-to-use" className="py-20">
-          <motion.h2 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-4xl font-bold text-center text-green-800 dark:text-green-200 mb-16"
-          >
-            How to Use EcoCart
-          </motion.h2>
-          <div className="grid md:grid-cols-3 gap-10">
-            <HowToCard
-              icon={<PenTool className="h-12 w-12 text-green-600 dark:text-green-400" />}
-              title="Add Items Manually"
-              description="Create your shopping list by adding items manually. Our system will suggest eco-friendly alternatives as you go."
-              step="1"
-            />
-            <HowToCard
-              icon={<Bot className="h-12 w-12 text-green-600 dark:text-green-400" />}
-              title="AI-Generated Cart"
-              description="Let our AI create an eco-friendly cart based on your preferences and shopping history."
-              step="2"
-            />
-            <HowToCard
-              icon={<Recycle className="h-12 w-12 text-green-600 dark:text-green-400" />}
-              title="Get AI Recommendations"
-              description="Receive AI-powered suggestions for eco-friendly alternatives to items in your cart."
-              step="3"
-            />
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="flex-1 mt-10 lg:mt-0"
+            >
+              <div className="relative aspect-[4/3] w-full max-w-[500px] mx-auto">
+                <Image
+                  src="/eco.svg"
+                  alt="EcoCart App Preview"
+                  layout="fill"
+                  objectFit="contain"
+                  priority
+                />
+              </div>
+            </motion.div>
           </div>
         </section>
 
@@ -104,7 +62,7 @@ export default function EnhancedLandingPage() {
           >
             Features That Make a Difference
           </motion.h2>
-          <div className="grid md:grid-cols-2 gap-10 mb-20">
+          <div className="grid md:grid-cols-2 gap-10">
             <FeatureCard
               icon={<ShoppingCart className="h-12 w-12 text-emerald-600 dark:text-emerald-400" />}
               title="Smart Recommendations"
@@ -115,17 +73,15 @@ export default function EnhancedLandingPage() {
               title="AI-Powered Lists"
               description="Let our AI create the perfect eco-friendly shopping list tailored to your needs and preferences."
             />
-          </div>
-          <div className="grid md:grid-cols-2 gap-10">
             <FeatureCard
               icon={<Users className="h-12 w-12 text-emerald-600 dark:text-emerald-400" />}
               title="Collaborative Shopping"
               description="Contribute to your friends' carts and make eco-friendly shopping a group effort."
             />
             <FeatureCard
-              icon={<UserPlus className="h-12 w-12 text-emerald-600 dark:text-emerald-400" />}
-              title="Invite Friends"
-              description="Spread the eco-friendly movement by inviting friends to join EcoCart."
+              icon={<Leaf className="h-12 w-12 text-emerald-600 dark:text-emerald-400" />}
+              title="Eco Impact Tracking"
+              description="See the positive environmental impact of your shopping choices in real-time."
             />
           </div>
         </section>
@@ -155,7 +111,7 @@ export default function EnhancedLandingPage() {
             <ReviewCard
               name="Emily R."
               avatar="/emily.svg"
-              review="I'm amazed at how much I've learned about sustainability through EcoCart. The sustainability scores have opened my eyes to the impact of my choices, and I feel empowered to make a difference."
+              review="I'm amazed at how much I've learned about sustainability through EcoCart. The eco impact tracking has opened my eyes to the impact of my choices, and I feel empowered to make a difference."
               rating={4}
             />
           </div>
@@ -178,15 +134,16 @@ export default function EnhancedLandingPage() {
           >
             Join thousands of eco-conscious shoppers and start making a positive impact with every purchase.
           </motion.p>
-          <motion.button 
+          <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="bg-green-600 text-white px-10 py-5 rounded-full text-xl font-semibold hover:bg-green-700 transition-colors transform hover:scale-105 shadow-lg hover:shadow-xl"
           >
-            Get Started Now
-            <ArrowRight className="inline-block ml-2 h-6 w-6" />
-          </motion.button>
+            <LoginLink className="bg-green-600 text-white px-10 py-5 rounded-full text-xl font-semibold hover:bg-green-700 transition-colors transform hover:scale-105 shadow-lg hover:shadow-xl inline-flex items-center justify-center">
+              Get Started Now
+              <ArrowRight className="ml-2 h-6 w-6" />
+            </LoginLink>
+          </motion.div>
         </section>
       </main>
     </div>
@@ -210,26 +167,6 @@ function FeatureCard({ icon, title, description }: { icon: React.ReactNode; titl
   );
 }
 
-function HowToCard({ icon, title, description, step }: { icon: React.ReactNode; title: string; description: string; step: string }) {
-  return (
-    <motion.div 
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8 }}
-      className="bg-white dark:bg-green-900 p-8 rounded-xl shadow-lg hover:shadow-2xl transition-shadow duration-300 transform hover:scale-105 relative overflow-hidden"
-    >
-      <div className="absolute top-0 left-0 bg-green-500 text-white text-xl font-bold w-12 h-12 flex items-center justify-center rounded-br-xl">
-        {step}
-      </div>
-      <div className="flex items-center justify-center w-16 h-16 bg-green-100 dark:bg-green-800 rounded-full mb-6 mt-6">
-        {icon}
-      </div>
-      <h3 className="text-2xl font-semibold text-green-800 dark:text-green-200 mb-4">{title}</h3>
-      <p className="text-green-700 dark:text-green-300">{description}</p>
-    </motion.div>
-  );
-}
-
 function ReviewCard({ name, avatar, review, rating }: { name: string; avatar: string; review: string; rating: number }) {
   return (
     <motion.div 
@@ -242,8 +179,8 @@ function ReviewCard({ name, avatar, review, rating }: { name: string; avatar: st
         <Image
           src={avatar}
           alt={`Avatar of ${name}`}
-          width={80}
-          height={80}
+          width={60}
+          height={60}
           className="rounded-full mr-4"
         />
         <div>

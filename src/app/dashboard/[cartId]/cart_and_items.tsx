@@ -321,7 +321,7 @@ export default function CartPage({ cart, items, contributors, addItem, deleteIte
                 </DialogHeader>
                 <form onSubmit={handleAddContributor} className="space-y-4">
                   <div>
-                    <Label htmlFor="contributorEmail">Contributor's Email</Label>
+                    <Label htmlFor="contributorEmail">Contributor&apos;s Email</Label>
                     <Input
                       id="contributorEmail"
                       type="email"

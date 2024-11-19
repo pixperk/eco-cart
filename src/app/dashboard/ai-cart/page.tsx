@@ -2,11 +2,8 @@ import { FC } from 'react'
 import { generateAICart } from './actions'
 import AICartGenerator from './AICartGenerator'
 
-interface pageProps {
-  
-}
 
-const page: FC<pageProps> = async({}) => {
+const page: FC = async({}) => {
     
     async function genCart(desc : string) {
         "use server"

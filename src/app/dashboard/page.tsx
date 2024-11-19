@@ -4,11 +4,8 @@ import { FC } from 'react'
 import MyCarts from './MyCarts'
 import { addCart, deleteCart, } from './actions'
 
-interface pageProps {
-  
-}
 
-const page: FC<pageProps> = async({}) => {
+const page: FC = async({}) => {
   const handleAddCart = async(cartName:string)=>{
     "use server"
     await addCart(cartName)

@@ -1,9 +1,8 @@
 
-import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { getCurrentUser } from "@/lib/server_utils";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { Navbar } from "@/components/Navbar";
 import prisma from "@/lib/prisma";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
 
 

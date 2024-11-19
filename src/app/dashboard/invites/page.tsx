@@ -4,11 +4,8 @@ import prisma from '@/lib/prisma'
 import Invites from './invites'
 import { getCurrentUser } from '@/lib/server_utils'
 
-interface pageProps {
-  
-}
 
-const page: FC<pageProps> = async({}) => {
+const page: FC = async({}) => {
 
     const user = await getCurrentUser()
 

@@ -202,7 +202,7 @@ export default function Component({
           <DialogHeader>
             <DialogTitle>Delete Cart</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete the cart "{cartToDelete?.name}"?
+              Are you sure you want to delete the cart &quot;{cartToDelete?.name}&quot;?
               This action cannot be undone.
             </DialogDescription>
           </DialogHeader>

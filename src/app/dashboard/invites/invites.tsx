@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Cart, User } from "@prisma/client";
-import { ShoppingCart, UserPlus, Check, X, Loader2 } from 'lucide-react';
+import { Button } from "@/components/ui/button";
 import { pusherClient } from "@/lib/pusher";
-import { toast } from "sonner";
+import { Cart, User } from "@prisma/client";
+import { Check, Loader2, ShoppingCart, UserPlus, X } from 'lucide-react';
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 interface Invite {
   id: string;
@@ -39,7 +39,7 @@ export default function Component({
 
   useEffect(() => {
     pusherClient.subscribe(`user_${userId}_invites`);
-    const inviteHandler = ({ inviteId }: { inviteId: string; senderName: string }) => {
+    const inviteHandler = () => {
       router.refresh()
     };
     pusherClient.bind(`invites`, inviteHandler);
@@ -47,7 +47,7 @@ export default function Component({
       pusherClient.unsubscribe(`user_${userId}_invites`);
       pusherClient.unbind(`invites`, inviteHandler);
     };
-  }, [userId, pendingInvites]);
+  }, [userId, pendingInvites, router]);
 
   const handleAcceptClick = async (inviteId: string) => {
     setLoadingInvites((prev) => ({ ...prev, [inviteId]: true }));
@@ -57,8 +57,8 @@ export default function Component({
         pendingInvites.filter((invite) => invite.id !== inviteId)
       );
       toast.success("Invite accepted successfully!");
-    } catch (error) {
-      toast.error("Failed to accept invite. Please try again.");
+    } catch (error : unknown) {
+      toast.error(error instanceof Error ? error.message : "Failed to accept invite. Please try again.");
     } finally {
       setLoadingInvites((prev) => ({ ...prev, [inviteId]: false }));
     }
@@ -72,8 +72,8 @@ export default function Component({
         pendingInvites.filter((invite) => invite.id !== inviteId)
       );
       toast.success("Invite rejected successfully!");
-    } catch (error) {
-      toast.error("Failed to reject invite. Please try again.");
+    } catch (error : unknown) {
+      toast.error(error instanceof Error ? error.message : "Failed to reject invite. Please try again.");
     } finally {
       setLoadingInvites((prev) => ({ ...prev, [inviteId]: false }));
     }
@@ -95,7 +95,7 @@ export default function Component({
         <div className="text-center py-12">
           <ShoppingCart className="mx-auto h-12 w-12 text-green-500 mb-4" />
           <p className="text-xl text-green-800 dark:text-green-200">
-            No pending invites. You're all caught up!
+            No pending invites. You&apos;re all caught up!
           </p>
         </div>
       ) : (
@@ -111,7 +111,7 @@ export default function Component({
                   {invite.cartUser.cart.name}
                 </h2>
                 <p className="text-sm text-green-600 dark:text-green-300">
-                  You've been invited to join this cart
+                  You&apos;ve been invited to join this cart
                 </p>
               </div>
               <div className="flex items-center space-x-4 mb-4">
