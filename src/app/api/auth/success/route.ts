@@ -13,7 +13,7 @@ export async function GET() {
         if (!user?.id) {
             throw new Error("User authentication failed.");
         }
-        
+
         let dbUser = await prisma.user.findUnique({
             where: { kindeId: user.id }
         });
@@ -31,7 +31,7 @@ export async function GET() {
             });
         }
 
-        return NextResponse.redirect("http://localhost:3000/dashboard");
+        return NextResponse.redirect("/dashboard");
 
     } catch (error) {
         console.error("Error processing user:", error);
