@@ -1,11 +1,16 @@
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import prisma from "@/lib/prisma";
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import CartPage from "./cart_and_items";
 import { notFound } from "next/navigation";
-import { addContributor, addItem, deleteItem, generateAIRecommendation } from "../actions";
+import { 
+  addItem,
+  addContributor,
+  deleteItem,
+  generateAIRecommendation
+} from "../actions";
 import { revalidatePath } from "next/cache";
+import { getCartForUser, getCartItems, getUserByKindeId } from "./actions";
 
 export default async function DashboardPage({
   params,
@@ -16,49 +21,22 @@ export default async function DashboardPage({
   const kindeUser = await getUser();
 
   if (!kindeUser) {
-    return notFound()
+    return notFound();
   }
 
-  const user = await prisma.user.findFirst({
-    where: {
-      kindeId: kindeUser.id,
-    },
-  });
+  const user = await getUserByKindeId(kindeUser.id);
 
   if (!user) {
-    return notFound()
+    return notFound();
   }
 
-  const cart = await prisma.cartUser.findFirst({
-    where: {
-      userId: user.id,
-      cartId: params.cartId,
-    },
-    include: {
-      cart: {
-        include: {
-          contributors: {
-            include: {
-              user: true,
-            },
-          },
-        },
-      },
-    },
-  });
-
-  const items = await prisma.cartItem.findMany({
-    where: {
-      cartId: params.cartId,
-    },
-    orderBy : {
-      createdAt : "desc"
-    }
-  });
+  const cart = await getCartForUser(user.id, params.cartId);
 
   if (!cart) {
     return notFound();
   }
+
+  const items = await getCartItems(params.cartId);
 
   async function handleAddItem(
     name: string,
@@ -87,6 +65,7 @@ export default async function DashboardPage({
     const result : string = await generateAIRecommendation(itemId)
     return result;
   }
+
 
   return (
     <Suspense fallback={<DashboardSkeleton />}>
