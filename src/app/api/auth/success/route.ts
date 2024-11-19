@@ -10,7 +10,7 @@ export async function GET() {
         const { getUser } = getKindeServerSession();
         const user = await getUser();
         
-        if (!user?.id) {
+        if (!user || !user.id) {
             throw new Error("User authentication failed.");
         }
 
