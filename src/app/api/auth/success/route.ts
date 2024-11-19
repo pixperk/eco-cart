@@ -13,8 +13,7 @@ export async function GET() {
         if (!user?.id) {
             throw new Error("User authentication failed.");
         }
-
-        // Check if user exists; if not, create a new user
+        
         let dbUser = await prisma.user.findUnique({
             where: { kindeId: user.id }
         });
@@ -37,7 +36,5 @@ export async function GET() {
     } catch (error) {
         console.error("Error processing user:", error);
         return new NextResponse("User processing failed", { status: 500 });
-    } finally {
-        await prisma.$disconnect();
     }
 }
