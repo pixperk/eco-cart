@@ -87,9 +87,9 @@ export default function CartPage({ cart, items, contributors, addItem, deleteIte
         setContributorEmail('')
         setIsContributorDialogOpen(false)
         toast.success('Contributor invited successfully!')
-      } catch (error) {
+      } catch (error : unknown) {
         console.error('Error inviting contributor:', error)
-        toast.error('Failed to invite contributor. Please try again.')
+        toast.error(error instanceof Error ? error.message :'Failed to invite contributor. Please try again.')
       } finally {
         setIsAddingContributor(false)
       }
