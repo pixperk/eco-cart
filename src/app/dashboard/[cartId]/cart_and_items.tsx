@@ -58,7 +58,7 @@ export default function CartPage({ cart, items, contributors, addItem, deleteIte
       pusherClient.unsubscribe(`user_${cart.id}_invites`);
       pusherClient.unbind(`items`, itemHandler);
     };
-  }, [cart.id, router]);
+  }, [cart.id]);
 
   const handleAddItem = async (e: React.FormEvent) => {
     e.preventDefault()

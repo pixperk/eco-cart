@@ -47,7 +47,7 @@ export default function Component({
       pusherClient.unsubscribe(`user_${userId}_invites`);
       pusherClient.unbind(`invites`, inviteHandler);
     };
-  }, [userId, pendingInvites, router]);
+  }, [userId, pendingInvites]);
 
   const handleAcceptClick = async (inviteId: string) => {
     setLoadingInvites((prev) => ({ ...prev, [inviteId]: true }));
