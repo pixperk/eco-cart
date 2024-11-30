@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Leaf, Menu, X, LogOut } from 'lucide-react';
-import { RegisterLink, LoginLink } from "@kinde-oss/kinde-auth-nextjs/components";
+import { RegisterLink, LoginLink, LogoutLink } from "@kinde-oss/kinde-auth-nextjs/components";
 import { User } from "@prisma/client";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "./ModeToggle";
@@ -84,12 +84,12 @@ export const Navbar = ({ user }: { user: User | null | undefined }) => {
                     Dashboard
                   </Button>
                 </Link>
-                <Link href="/api/auth/logout" passHref>
+                <LogoutLink postLogoutRedirectURL="/">
                   <Button variant="ghost" className="w-full text-left text-gray-600 hover:text-green-600 hover:bg-green-50 dark:text-gray-200 dark:hover:text-green-400 dark:hover:bg-gray-800">
                     <LogOut className="mr-2 h-4 w-4 inline" />
                     Sign Out
                   </Button>
-                </Link>
+                </LogoutLink>
               </>
             ) : (
               <>
