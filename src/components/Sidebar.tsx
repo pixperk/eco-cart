@@ -118,7 +118,7 @@ const SidebarContent = ({ user, invites, onNavigate }: SidebarProps & { onNaviga
             </p>
           </div>
         </div>
-        <LogoutLink>
+        <LogoutLink postLogoutRedirectURL="/">
           <Button
             variant="ghost"
             className="w-full justify-start text-green-100 hover:text-green-50 hover:bg-green-700/20 dark:hover:bg-gray-800/50"
