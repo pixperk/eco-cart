@@ -45,6 +45,7 @@ export default function CartPage({ cart, items, contributors, addItem, deleteIte
   const [isAddingItem, setIsAddingItem] = useState(false)
   const [isAddingContributor, setIsAddingContributor] = useState(false)
   const [isContributorDialogOpen, setIsContributorDialogOpen] = useState(false)
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
 
   const router = useRouter();
 
@@ -58,7 +59,7 @@ export default function CartPage({ cart, items, contributors, addItem, deleteIte
       pusherClient.unsubscribe(`user_${cart.id}_invites`);
       pusherClient.unbind(`items`, itemHandler);
     };
-  }, [cart.id]);
+  }, [cart.id, router]);
 
   const handleAddItem = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -115,6 +116,7 @@ export default function CartPage({ cart, items, contributors, addItem, deleteIte
       try {
         await deleteItem(itemToDelete.id)
         toast.success('Item deleted successfully!')
+        setIsDeleteDialogOpen(false)
       } catch (error) {
         console.error('Error deleting item:', error)
         toast.error('Failed to delete item. Please try again.')
@@ -128,10 +130,10 @@ export default function CartPage({ cart, items, contributors, addItem, deleteIte
   return (
     <div className="container mx-auto p-4">
       <Card className="border-green-500 dark:border-green-700 overflow-hidden">
-        <CardHeader className="bg-gradient-to-r from-green-500 to-emerald-600 text-white p-6">
-          <div className="flex justify-between items-center">
+        <CardHeader className="bg-gradient-to-r from-green-500 to-emerald-600 text-white p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <div>
-              <CardTitle className="text-3xl font-bold flex items-center">
+              <CardTitle className="text-2xl sm:text-3xl font-bold flex items-center">
                 <ShoppingCart className="mr-2" />
                 {cart.name}
               </CardTitle>
@@ -156,7 +158,7 @@ export default function CartPage({ cart, items, contributors, addItem, deleteIte
             </TooltipProvider>
           </div>
         </CardHeader>
-        <CardContent className="p-6">
+        <CardContent className="p-4 sm:p-6">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2 mb-6">
               <TabsTrigger value="items" className="flex items-center justify-center">
@@ -169,12 +171,12 @@ export default function CartPage({ cart, items, contributors, addItem, deleteIte
               </TabsTrigger>
             </TabsList>
             <TabsContent value="items">
-              <ScrollArea className="h-[400px] pr-4">
+              <ScrollArea className="h-[300px] sm:h-[400px] pr-4">
                 {items.length > 0 ? (
                   <ul className="space-y-4">
                     {items.map((item) => (
-                      <li key={item.id} className="flex items-center justify-between p-4 bg-green-50 dark:bg-green-900/50 rounded-lg shadow-sm transition-all hover:shadow-md">
-                        <div className="flex items-center">
+                      <li key={item.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-green-50 dark:bg-green-900/50 rounded-lg shadow-sm transition-all hover:shadow-md">
+                        <div className="flex items-center mb-2 sm:mb-0">
                           <div className="bg-green-200 dark:bg-green-800 p-2 rounded-full mr-4">
                             <Leaf className="h-5 w-5 text-green-600 dark:text-green-400" />
                           </div>
@@ -185,7 +187,7 @@ export default function CartPage({ cart, items, contributors, addItem, deleteIte
                             </span>
                           </div>
                         </div>
-                        <div className="flex space-x-2">
+                        <div className="flex space-x-2 mt-2 sm:mt-0">
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger asChild>
@@ -208,9 +210,12 @@ export default function CartPage({ cart, items, contributors, addItem, deleteIte
                               </TooltipContent>
                             </Tooltip>
                           </TooltipProvider>
-                          <Dialog>
+                          <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
                             <DialogTrigger asChild>
-                              <Button variant="outline" size="icon" className="text-red-500 hover:text-red-600 border-red-300 hover:border-red-400" onClick={() => setItemToDelete(item)}>
+                              <Button variant="outline" size="icon" className="text-red-500 hover:text-red-600 border-red-300 hover:border-red-400" onClick={() => {
+                                setItemToDelete(item)
+                                setIsDeleteDialogOpen(true)
+                              }}>
                                 <Trash2 className="h-4 w-4" />
                               </Button>
                             </DialogTrigger>
@@ -220,7 +225,7 @@ export default function CartPage({ cart, items, contributors, addItem, deleteIte
                               </DialogHeader>
                               <p>Are you sure you want to delete {itemToDelete?.name}?</p>
                               <div className="flex justify-end space-x-2 mt-4">
-                                <Button variant="outline" onClick={() => setItemToDelete(null)}>Cancel</Button>
+                                <Button variant="outline" onClick={() => setIsDeleteDialogOpen(false)}>Cancel</Button>
                                 <Button variant="destructive" onClick={handleDeleteItem} disabled={isDeleting}>
                                   {isDeleting ? (
                                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -273,7 +278,7 @@ export default function CartPage({ cart, items, contributors, addItem, deleteIte
                     className="border-green-300 focus:ring-green-500"
                   />
                 </div>
-                <div className="flex space-x-4">
+                <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
                   <div className="flex-1">
                     <Label htmlFor="itemQty">Quantity</Label>
                     <Input
@@ -349,3 +354,4 @@ export default function CartPage({ cart, items, contributors, addItem, deleteIte
     </div>
   )
 }
+
