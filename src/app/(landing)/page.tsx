@@ -24,7 +24,7 @@ export default function EnhancedLandingPage() {
                 Eco-friendly, AI-powered recommendations for conscious shopping. Make a positive impact with every purchase.
               </p>
               <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-6">
-                <LoginLink postLoginRedirectURL='/dashboard' className="bg-green-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-green-700 transition-colors transform hover:scale-105 shadow-lg hover:shadow-xl inline-flex items-center justify-center">
+                <LoginLink postLoginRedirectURL='/dashboard/ai-cart' className="bg-green-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:bg-green-700 transition-colors transform hover:scale-105 shadow-lg hover:shadow-xl inline-flex items-center justify-center">
                   <List className="mr-2 h-6 w-6" />
                   Create Custom List
                 </LoginLink>
