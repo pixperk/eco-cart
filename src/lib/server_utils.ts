@@ -1,6 +1,7 @@
 "use server"
 
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { notFound } from "next/navigation";
 import prisma from "./prisma";
 
 
@@ -9,7 +10,7 @@ export async function getCurrentUser() {
     const kindeUser = await getUser();
   
     if (!kindeUser) {
-      throw new Error("Unauthorized");
+      return notFound()
     }
   
     const user = await prisma.user.findFirst({
@@ -17,7 +18,7 @@ export async function getCurrentUser() {
     });
   
     if (!user) {
-      throw new Error("Unauthorized");
+      return notFound()
     }
   
     return user;
