@@ -18,7 +18,7 @@ export async function getCurrentUser() {
     });
   
     if (!user) {
-      redirect("/api/auth/success/")
+      redirect("/auth-success")
     }
   
     return user;
