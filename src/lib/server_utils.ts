@@ -1,7 +1,7 @@
 "use server"
 
 import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import prisma from "./prisma";
 
 
@@ -18,7 +18,7 @@ export async function getCurrentUser() {
     });
   
     if (!user) {
-      return notFound()
+      redirect("/api/auth/success/")
     }
   
     return user;
