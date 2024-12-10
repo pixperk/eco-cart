@@ -14,7 +14,7 @@ export default function AuthSuccessPage() {
         const response = await fetch('/api/auth/success')
         if (response.ok) {
           setStatus('redirecting')
-          router.push('/dashboard')
+          router.push('/dashboard/')
         } else {
           throw new Error('Failed to process authentication')
         }

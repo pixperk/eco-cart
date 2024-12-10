@@ -31,7 +31,7 @@ export async function GET() {
             });
         }
 
-        return NextResponse.redirect("/dashboard");
+        return new NextResponse("Success");
 
     } catch (error) {
         console.error("Error processing user:", error);
