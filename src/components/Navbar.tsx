@@ -25,8 +25,8 @@ export const Navbar = ({ user }: { user: User | null | undefined }) => {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2 hover:opacity-90 transition-opacity">
-              <Leaf className="h-8 w-8 text-primary" />
-              <span className="text-2xl font-bold text-primary">EcoCart</span>
+              <Leaf className="h-8 w-8 text-green-600 dark:text-green-400" />
+              <span className="text-2xl font-bold text-green-700 dark:text-green-300">EcoCart</span>
             </Link>
           </div>
           <div className="hidden md:flex items-center space-x-4">
